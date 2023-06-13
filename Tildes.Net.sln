@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tildes.Net.Lib", "Tildes.Net.Lib\Tildes.Net.Lib.csproj", "{0BE21F7B-CA69-45B0-A050-2D343F48A24A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tildes.Net.Lib.Tests", "Tildes.Net.Lib.Tests\Tildes.Net.Lib.Tests.csproj", "{F33636B7-49BB-4DB3-B452-3016D0DA5A0A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BE21F7B-CA69-45B0-A050-2D343F48A24A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BE21F7B-CA69-45B0-A050-2D343F48A24A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BE21F7B-CA69-45B0-A050-2D343F48A24A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BE21F7B-CA69-45B0-A050-2D343F48A24A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F33636B7-49BB-4DB3-B452-3016D0DA5A0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F33636B7-49BB-4DB3-B452-3016D0DA5A0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F33636B7-49BB-4DB3-B452-3016D0DA5A0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F33636B7-49BB-4DB3-B452-3016D0DA5A0A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
