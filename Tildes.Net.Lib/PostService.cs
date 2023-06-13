@@ -1,6 +1,4 @@
-﻿using CodeHollow.FeedReader;
-using CodeHollow.FeedReader.Feeds;
-using Fizzler.Systems.HtmlAgilityPack;
+﻿using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Tildes.Net.Lib.Abstraction;
 using Tildes.Net.Lib.Models;
@@ -15,12 +13,27 @@ public class PostService : IPostService
     {
         _baseUrl = baseUrl;
     }
-    public async Task<IEnumerable<Post>> GetPostsAsync(DateTime? from = null)
+
+    public async Task<HtmlDocument?> GetPreviousHtmlDocumentAsync(string id)
+    {
+        var web = new HtmlWeb();
+        return await web.LoadFromWebAsync(Path.Combine(_baseUrl, $"?before={id}"));
+    }
+    public async Task<HtmlDocument?> GetNextHtmlDocumentAsync(string id)
+    {
+        var web = new HtmlWeb();
+        return await web.LoadFromWebAsync(Path.Combine(_baseUrl, $"?after={id}"));
+    }
+    public async Task<HtmlDocument?> GetHtmlDocumentAsync()
     {
         var web = new HtmlWeb();
 
-        var htmlDoc = web.Load(_baseUrl);
-        var topicListing = htmlDoc.DocumentNode.QuerySelector(".topic-listing");
+        return await web.LoadFromWebAsync(_baseUrl);
+    }
+
+    public IEnumerable<Post> GetPostsFromHtmlDocument(HtmlDocument htmlDocument)
+    {
+        var topicListing = htmlDocument.DocumentNode.QuerySelector(".topic-listing");
 
         var posts = new List<Post>();
 
@@ -40,21 +53,21 @@ public class PostService : IPostService
             var link = article.QuerySelector(".topic-info > .topic-info-source > .link-user")?
                 .GetAttributeValue("href", string.Empty);
             
-            var post = new Post()
+            var post = new Post
             {
                 Id = id,
                 Title = title,
                 TextExcerpt = textExcerpt,
-                Metadata = new PostMetadata()
+                Metadata = new PostMetadata
                 {
                     Group = group,
                     ContentType = contentType
                 },
-                Info = new PostInfo()
+                Info = new PostInfo
                 {
                     Comments = comments,
                     TimeStamp = timeStamp,
-                    User = new User()
+                    User = new User
                     {
                         Name = name,
                         Link = link
@@ -64,5 +77,23 @@ public class PostService : IPostService
             posts.Add(post);
         }
         return posts;
+    }
+
+    public async Task<IEnumerable<Post>> GetPostsAsync()
+    {
+        var htmlDoc = await GetHtmlDocumentAsync();
+        return htmlDoc == null ? Array.Empty<Post>() : GetPostsFromHtmlDocument(htmlDoc);
+    }
+
+    public async Task<IEnumerable<Post>> GetPostsBeforeAsync(string id)
+    {
+        var htmlDoc = await GetPreviousHtmlDocumentAsync(id);
+        return htmlDoc == null ? Array.Empty<Post>() : GetPostsFromHtmlDocument(htmlDoc);
+    }
+
+    public async Task<IEnumerable<Post>> GetPostsAfterAsync(string id)
+    {
+        var htmlDoc = await GetNextHtmlDocumentAsync(id);
+        return htmlDoc == null ? Array.Empty<Post>() : GetPostsFromHtmlDocument(htmlDoc);
     }
 }

@@ -4,5 +4,7 @@ namespace Tildes.Net.Lib.Abstraction;
 
 public interface IPostService
 {
-    Task<IEnumerable<Post>> GetPostsAsync(DateTime? from = null);
+    Task<IEnumerable<Post>> GetPostsAsync();
+    Task<IEnumerable<Post>> GetPostsBeforeAsync(string id);
+    Task<IEnumerable<Post>> GetPostsAfterAsync(string id);
 }
