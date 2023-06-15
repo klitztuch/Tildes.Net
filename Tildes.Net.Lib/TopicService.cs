@@ -5,30 +5,13 @@ using Tildes.Net.Lib.Models;
 
 namespace Tildes.Net.Lib;
 
-public class PostService : IPostService
+public class TopicService : ITopicService
 {
-    private readonly string _baseUrl;
+    private readonly IHtmlService _htmlService;
 
-    public PostService(string baseUrl)
+    public TopicService(IHtmlService htmlService)
     {
-        _baseUrl = baseUrl;
-    }
-
-    public async Task<HtmlDocument?> GetPreviousHtmlDocumentAsync(string id)
-    {
-        var web = new HtmlWeb();
-        return await web.LoadFromWebAsync(Path.Combine(_baseUrl, $"?before={id}"));
-    }
-    public async Task<HtmlDocument?> GetNextHtmlDocumentAsync(string id)
-    {
-        var web = new HtmlWeb();
-        return await web.LoadFromWebAsync(Path.Combine(_baseUrl, $"?after={id}"));
-    }
-    public async Task<HtmlDocument?> GetHtmlDocumentAsync()
-    {
-        var web = new HtmlWeb();
-
-        return await web.LoadFromWebAsync(_baseUrl);
+        _htmlService = htmlService;
     }
 
     public IEnumerable<Post> GetPostsFromHtmlDocument(HtmlDocument htmlDocument)
@@ -79,21 +62,38 @@ public class PostService : IPostService
         return posts;
     }
 
-    public async Task<IEnumerable<Post>> GetPostsAsync()
+    public async Task<IEnumerable<Post>> GetPostsAsync(string? topic = null)
     {
-        var htmlDoc = await GetHtmlDocumentAsync();
+        var topicPath = BuildTopicPath(topic);
+        var htmlDoc = await _htmlService.GetHtmlDocumentAsync(topicPath);
         return htmlDoc == null ? Array.Empty<Post>() : GetPostsFromHtmlDocument(htmlDoc);
     }
 
-    public async Task<IEnumerable<Post>> GetPostsBeforeAsync(string id)
+    public async Task<IEnumerable<Post>> GetPostsBeforeAsync(string topic, string id)
     {
-        var htmlDoc = await GetPreviousHtmlDocumentAsync(id);
+        var queryParameter = $"after={id}";
+        var topicPath = BuildTopicPath(topic, queryParameter);
+        var htmlDoc = await _htmlService.GetHtmlDocumentAsync(topicPath);
         return htmlDoc == null ? Array.Empty<Post>() : GetPostsFromHtmlDocument(htmlDoc);
     }
 
-    public async Task<IEnumerable<Post>> GetPostsAfterAsync(string id)
+    public async Task<IEnumerable<Post>> GetPostsAfterAsync(string topic, string id)
     {
-        var htmlDoc = await GetNextHtmlDocumentAsync(id);
+        var queryParameter = $"before={id}";
+        var topicPath = BuildTopicPath(topic, queryParameter);
+        var htmlDoc = await _htmlService.GetHtmlDocumentAsync(topicPath);
         return htmlDoc == null ? Array.Empty<Post>() : GetPostsFromHtmlDocument(htmlDoc);
+    }
+
+    public string GetTopicLink(string topic)
+    {
+        throw new NotImplementedException();
+    }
+
+    private string BuildTopicPath(string? topic,
+        string? queryParameter = null)
+    {
+        var topicUrl = topic == null ? string.Empty : $"~{topic}";
+        return queryParameter == null ? topicUrl : $"{topicUrl}?{queryParameter}";
     }
 }
